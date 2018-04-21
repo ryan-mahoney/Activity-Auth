@@ -20,9 +20,9 @@
 
 
   var forbidden = function forbidden(res, redirect, code) {
+    res.set("x-error", code);
     res.redirect(redirect);
     res.status(403);
-    res.set("x-error", code);
   };
 
   var addSessionToRequestContext = function addSessionToRequestContext(req, token, signingKey) {

@@ -1,9 +1,9 @@
 import { decryptSession, encryptSession } from "./session";
 
 const forbidden = (res, redirect, code) => {
+  res.set("x-error", code);
   res.redirect(redirect);
   res.status(403);
-  res.set("x-error", code);
 };
 
 const addSessionToRequestContext = (req, token, signingKey) => {
