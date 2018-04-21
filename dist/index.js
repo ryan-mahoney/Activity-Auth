@@ -16,5 +16,10 @@
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.default = { authorizerFactory: _activityAuth.factory, middlewareFactory: _middleware.factory, decryptSession: _session.decryptSession, encryptSession: _session.encryptSession };
+  exports.default = {
+    authorizerFactory: _activityAuth.factory,
+    middlewareFactory: _middleware.factory,
+    decryptSession: _session.decryptSession,
+    encryptSession: _session.encryptSession
+  };
 });
