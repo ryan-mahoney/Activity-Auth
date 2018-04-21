@@ -1,8 +1,8 @@
-import { factory as middlewareFactory } from "./middleware";
-import { factory as authorizerFactory } from "./activity-auth";
+import { middlewareFactory } from "./middleware";
+import { authorizerFactory } from "./activity-auth";
 import { decryptSession, encryptSession } from "./session";
 
-export default {
+module.exports = {
   authorizerFactory: authorizerFactory,
   middlewareFactory: middlewareFactory,
   decryptSession: decryptSession,

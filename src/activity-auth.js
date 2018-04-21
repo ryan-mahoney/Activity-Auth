@@ -1,13 +1,15 @@
 export const invertActivitiesByRole = roleActivities =>
-  Object.keys(roleActivities).reduce((output, role) => {
-    return roleActivities[role].reduce(
-      (newOutput, activity) =>
-        Object.assign({}, newOutput, {
-          [activity]: (newOutput[activity] || []).concat(role)
-        }),
-      output
-    );
-  }, {});
+  Object.keys(roleActivities).reduce(
+    (output, role) =>
+      roleActivities[role].reduce(
+        (newOutput, activity) =>
+          Object.assign({}, newOutput, {
+            [activity]: (newOutput[activity] || []).concat(role)
+          }),
+        output
+      ),
+    {}
+  );
 
 export const getActivitiesByRoles = (roleActivities, roles) => [
   ...new Set(
@@ -39,7 +41,7 @@ export const getAppsByComponents = (components, apps) => {
   return apps.filter(app => appIds.indexOf(app.id) > -1);
 };
 
-export const factory = (
+export const authorizerFactory = (
   activitiesByRole,
   entitiesByActivity = {},
   components = [],

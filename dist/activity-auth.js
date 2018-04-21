@@ -16,7 +16,7 @@
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.factory = exports.getAppsByComponents = exports.getComponentsByEntities = exports.getEntitiesByActivities = exports.getActivitiesByRoles = exports.invertActivitiesByRole = undefined;
+  exports.authorizerFactory = exports.getAppsByComponents = exports.getComponentsByEntities = exports.getEntitiesByActivities = exports.getActivitiesByRoles = exports.invertActivitiesByRole = undefined;
 
   var _set2 = _interopRequireDefault(_set);
 
@@ -69,7 +69,7 @@
     });
   };
 
-  var factory = exports.factory = function factory(activitiesByRole) {
+  var authorizerFactory = exports.authorizerFactory = function authorizerFactory(activitiesByRole) {
     var entitiesByActivity = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
     var components = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];
     var apps = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : [];

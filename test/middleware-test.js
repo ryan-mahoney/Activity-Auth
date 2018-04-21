@@ -1,6 +1,6 @@
 import assert from "assert";
-import { factory as middlewareFactory } from "./../src/middleware";
-import { factory as activityAuthFactory } from "./../src/activity-auth";
+import { middlewareFactory } from "./../src/middleware";
+import { authorizerFactory } from "./../src/activity-auth";
 import { decryptSession, encryptSession } from "./../src/session";
 
 function response() {
@@ -28,7 +28,7 @@ describe("authentication and authorization middleware", () => {
   const components = [];
   const apps = [];
 
-  const activityAuth = activityAuthFactory(
+  const activityAuth = authorizerFactory(
     activitiesByRole,
     entitiesByActivity,
     components,

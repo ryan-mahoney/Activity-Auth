@@ -16,7 +16,7 @@ const addAccessToRequestContext = (req, access) => {
   return true;
 };
 
-export const factory = (activityAuth, signingKey) => (
+export const middlewareFactory = (activityAuth, signingKey) => (
   activity,
   redirect = "/access-denied"
 ) => (req, res, next) =>

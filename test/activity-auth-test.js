@@ -5,7 +5,7 @@ import {
   getEntitiesByActivities,
   getComponentsByEntities,
   getAppsByComponents,
-  factory
+  authorizerFactory
 } from "./../src/activity-auth";
 
 describe("data manipulation", () => {
@@ -89,7 +89,7 @@ describe("user authorizations", () => {
 
   const apps = [{ id: "xapp" }, { id: "zapp" }];
 
-  const activityAuth = factory(
+  const activityAuth = authorizerFactory(
     activitiesByRole,
     activityEntities,
     components,

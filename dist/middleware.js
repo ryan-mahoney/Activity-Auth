@@ -16,7 +16,7 @@
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.factory = undefined;
+  exports.middlewareFactory = undefined;
 
 
   var forbidden = function forbidden(res, redirect, code) {
@@ -35,7 +35,7 @@
     return true;
   };
 
-  var factory = exports.factory = function factory(activityAuth, signingKey) {
+  var middlewareFactory = exports.middlewareFactory = function middlewareFactory(activityAuth, signingKey) {
     return function (activity) {
       var redirect = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : "/access-denied";
       return function (req, res, next) {
