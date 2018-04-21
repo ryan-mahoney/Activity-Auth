@@ -1,4 +1,5 @@
-import { factory as middlewareFactory } from "./../src/middleware";
-import { factory as authorizerFactory } from "./../src/activity-auth";
+import { factory as middlewareFactory } from "./middleware";
+import { factory as authorizerFactory } from "./activity-auth";
+import { decryptSession, encryptSession } from "./session";
 
-export default { authorizerFactory, middlewareFactory };
+export default { authorizerFactory, middlewareFactory, decryptSession, encryptSession };
