@@ -1,6 +1,6 @@
 {
     "name": "activity-auth",
-    "version": "1.0.5",
+    "version": "1.0.6",
     "description": "Activity based authorization library and middleware",
     "repository": {
         "type": "git",
@@ -10,11 +10,12 @@
     "license": "MIT",
     "homepage": "https://github.com/ryan-mahoney/Activity-Auth",
     "keywords": [
-        "authorization", "middleware"
+        "authorization",
+        "middleware"
     ],
     "main": "dist/index.js",
     "scripts": {
-        "prepublish": "babel --plugins 'transform-es2015-modules-umd' src --out-dir ./dist",
+        "build": "node_modules/babel-cli/bin/babel.js --plugins 'transform-es2015-modules-umd' src --out-dir ./dist",
         "lint": "eslint ./src",
         "lintfix": "eslint ./src --fix",
         "test": "node_modules/mocha/bin/mocha --require babel-core/register"
