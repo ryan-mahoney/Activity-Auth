@@ -12,6 +12,13 @@ function response() {
   this.set = (key, value) => (this.headers[key] = value);
 }
 
+function request(cookies, headers) {
+  this.headers = {};
+  this.cookies = cookies;
+  this.headers = headers || {};
+  this.header = key => this.headers[key] || null;
+}
+
 describe("authentication and authorization middleware", () => {
   const activitiesByRole = {
     role: ["activity1", "activity2"],
@@ -40,7 +47,7 @@ describe("authentication and authorization middleware", () => {
   const expiration = new Date().getTime() + 24 * 60 * 60 * 1000; // 24 hours from now
 
   it("redirects unauthorized request, no cookies", () => {
-    let req = {};
+    let req = new request();
     let res = new response();
     const next = () => {};
     const middleware = middlewareFactory(activityAuth, signingKey);
@@ -50,7 +57,7 @@ describe("authentication and authorization middleware", () => {
   });
 
   it("redirects unauthorized request, no token in cookies", () => {
-    let req = { cookies: {} };
+    let req = new request({});
     let res = new response();
     const next = () => {};
     const middleware = middlewareFactory(activityAuth, signingKey);
@@ -60,7 +67,7 @@ describe("authentication and authorization middleware", () => {
   });
 
   it("redirects unauthorized request, bad token in cookies", () => {
-    let req = { cookies: { token: "XXX" } };
+    let req = new request({ token: "XXX" });
     let res = new response();
     const next = () => {};
     const middleware = middlewareFactory(activityAuth, signingKey);
@@ -71,7 +78,7 @@ describe("authentication and authorization middleware", () => {
 
   it("redirects unauthorized request, no roles in session", () => {
     const token = encryptSession({}, expiration, signingKey);
-    let req = { cookies: { token: token } };
+    let req = new request({ token: token });
     let res = new response();
     const next = () => {};
     const middleware = middlewareFactory(activityAuth, signingKey);
@@ -82,7 +89,7 @@ describe("authentication and authorization middleware", () => {
 
   it("redirects unauthorized request, restricted role in session", () => {
     const token = encryptSession({ roles: ["role10"] }, expiration, signingKey);
-    let req = { cookies: { token: token } };
+    let req = new request({ token: token });
     let res = new response();
     const next = () => {};
     const middleware = middlewareFactory(activityAuth, signingKey);
@@ -93,7 +100,19 @@ describe("authentication and authorization middleware", () => {
 
   it("allows request, authorized role in session", () => {
     const token = encryptSession({ roles: ["role3"] }, expiration, signingKey);
-    let req = { cookies: { token: token } };
+    let req = new request({ token: token });
+    let res = new response();
+    let nextCalled = false;
+    const next = () => (nextCalled = true);
+    const middleware = middlewareFactory(activityAuth, signingKey);
+    middleware("activity1")(req, res, next);
+    assert.equal(res.code, 200);
+    assert.equal(nextCalled, true);
+  });
+
+  it("allows request, authorized role in header", () => {
+    const token = encryptSession({ roles: ["role3"] }, expiration, signingKey);
+    let req = new request({}, { Authorization: `Bearer ${token}` });
     let res = new response();
     let nextCalled = false;
     const next = () => (nextCalled = true);
