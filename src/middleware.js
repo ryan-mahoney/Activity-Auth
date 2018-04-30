@@ -1,52 +1,83 @@
 import { decryptSession, encryptSession } from "./session";
-
-const forbidden = (res, redirect) => {
-  res.redirect(redirect);
-  res.status(403);
-};
-
-const addSessionToRequestContext = (req, token, signingKey) => {
-  req.session = decryptSession(token, signingKey);
-  return req.session === false ? false : true;
-};
-
-const addAccessToRequestContext = (req, access) => (req.access = access);
-
-const getTokenFromCookieOrHeader = req =>
-  (req.token =
-    req.cookies && req.cookies.token
-      ? req.cookies.token
-      : req.header("Authorization")
-        ? req.header("Authorization").replace(/^Bearer /, "")
-        : false);
+import everyFn from "every-fn";
 
 export const middlewareFactory = (activityAuth, signingKey) => (
   activity,
   redirect = "/access-denied"
-) => (req, res, next) =>
-  [
-    // check for token
-    (req, res) =>
-      !getTokenFromCookieOrHeader(req) ? res.set("x-error", 1) : true,
+) => async (req, res, next) => {
+  let errorCode = false;
+  let doNext = false;
 
-    // check for session
-    (req, res) =>
-      !addSessionToRequestContext(req, req.token, signingKey)
-        ? res.set("x-error", 2)
-        : true,
+  const setErrorCode = code => {
+    errorCode = code;
+    return false;
+  };
 
-    // check for roles in session
-    (req, res) => (!req.session.roles ? res.set("x-error", 3) : true),
+  const haltThenDoNext = () => {
+    doNext = true;
+    return false;
+  };
 
-    // check for role access to activity
-    (req, res) =>
-      !activityAuth.check(activity, req.session.roles)
-        ? res.set("x-error", 4)
-        : true
-  ].reduce((doNext, fn) => (doNext === true ? fn(req, res) : false), true) ===
-  true
-    ? addAccessToRequestContext(
-        req,
-        activityAuth.getAccessData(req.session.roles)
-      ) && next()
-    : forbidden(res, redirect);
+  const getTokenFromCookie = () => ({
+    token: req.cookies && req.cookies.token ? req.cookies.token : false
+  });
+
+  const getTokenFromHeader = ({ token }) => ({
+    token: token
+      ? token
+      : req.header("Authorization")
+        ? req.header("Authorization").replace(/^Bearer /, "")
+        : false
+  });
+
+  const sendTokenRejection = ({ token }) =>
+    token ? {} : activity == "public" ? haltThenDoNext() : setErrorCode(1);
+
+  const getSessionFromToken = ({ token }) => {
+    let session = decryptSession(token, signingKey);
+    if (session) {
+      session = Object.assign({}, session);
+    }
+    return {
+      session: session
+    };
+  };
+
+  const sendSessionRejection = ({ session }) =>
+    session
+      ? activity == "public"
+        ? haltThenDoNext()
+        : {}
+      : activity == "public"
+        ? haltThenDoNext()
+        : setErrorCode(2);
+
+  const sendRoleRejection = ({ session }) =>
+    session.roles ? {} : setErrorCode(3);
+
+  const sendActivityRejection = ({ session: { roles } }) =>
+    activityAuth.check(activity, roles) ? haltThenDoNext() : setErrorCode(4);
+
+  const data = await everyFn([
+    getTokenFromCookie,
+    getTokenFromHeader,
+    sendTokenRejection,
+    getSessionFromToken,
+    sendSessionRejection,
+    sendRoleRejection,
+    sendActivityRejection
+  ]);
+  if (!doNext) {
+    res.set("x-error", errorCode);
+    res.redirect(redirect);
+    res.status(403);
+  } else {
+    if (data.session) {
+      req.session = data.session;
+    }
+    if (data.session && data.session.roles) {
+      req.access = activityAuth.getAccessData(data.session.roles);
+    }
+    next();
+  }
+};
