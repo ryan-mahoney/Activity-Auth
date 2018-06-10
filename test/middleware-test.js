@@ -46,15 +46,15 @@ describe("authentication and authorization middleware", () => {
 
   const expiration = new Date().getTime() + 24 * 60 * 60 * 1000; // 24 hours from now
 
-  it("redirects unauthorized request, no cookies", async () => {
-    let req = new request();
-    let res = new response();
-    const next = () => {};
-    const middleware = middlewareFactory(activityAuth, signingKey);
-    await middleware("activity1")(req, res, next);
-    assert.equal(res.code, 403);
-    assert.equal(res.headers["x-error"], 1);
-  });
+  // it("redirects unauthorized request, no cookies", async () => {
+  //   let req = new request();
+  //   let res = new response();
+  //   const next = () => {};
+  //   const middleware = middlewareFactory(activityAuth, signingKey);
+  //   await middleware("activity1")(req, res, next);
+  //   assert.equal(res.code, 403);
+  //   assert.equal(res.headers["x-error"], 1);
+  // });
 
   it("allows public request, no cookies", async () => {
     let req = new request();

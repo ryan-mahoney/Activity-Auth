@@ -8,6 +8,8 @@ export const decryptSession = (token, signingKey) => {
   }
 };
 
-export const encryptSession = (data, expiration, signingKey) => (
-  nJwt.create(data, signingKey).setExpiration(expiration).compact()
-);
+export const encryptSession = (data, expiration, signingKey) =>
+  nJwt
+    .create(data, signingKey)
+    .setExpiration(expiration)
+    .compact();
