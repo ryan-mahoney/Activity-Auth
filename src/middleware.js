@@ -1,4 +1,5 @@
 import everyFn from "every-fn";
+import sessionHandler from "./session-handler";
 import {
   getTokenFromCookie,
   getTokenFromHeader,
@@ -8,9 +9,9 @@ import {
   sendSessionRejection,
   sendRoleRejection,
   sendActivityRejection
-} from "./context";
+} from "./middleware-context";
 
-export const middlewareFactory = (activityAuth, signingKey, sessionHandler) => (
+export const middlewareFactory = (activityAuth, signingKey, logHandler) => (
   activity,
   redirect = "/access-denied"
 ) => async (req, res, next) => {
@@ -41,9 +42,7 @@ export const middlewareFactory = (activityAuth, signingKey, sessionHandler) => (
     if (data.session && data.session.roles) {
       req.access = activityAuth.getAccessData(data.session.roles);
     }
-    if (sessionHandler) {
-      sessionHandler(req, res);
-    }
+    await sessionHandler(req, res, signingKey, null, logHandler);
     next();
   }
 };

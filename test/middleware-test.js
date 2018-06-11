@@ -1,7 +1,7 @@
 import assert from "assert";
 import { middlewareFactory } from "./../src/middleware";
 import { authorizerFactory } from "./../src/activity-auth";
-import { decryptSession, encryptSession } from "./../src/session";
+import { encryptSession } from "./../src/session";
 
 function response() {
   this.code = 200;
@@ -10,6 +10,7 @@ function response() {
   this.status = value => (this.code = value);
   this.redirect = value => (this.location = value);
   this.set = (key, value) => (this.headers[key] = value);
+  this.cookie = () => {};
 }
 
 function request(cookies, headers) {
@@ -17,6 +18,7 @@ function request(cookies, headers) {
   this.cookies = cookies;
   this.headers = headers || {};
   this.header = key => this.headers[key] || null;
+  this.get = key => this.headers[key] || null;
 }
 
 describe("authentication and authorization middleware", () => {
