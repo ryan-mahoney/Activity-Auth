@@ -1,16 +1,16 @@
 (function (global, factory) {
   if (typeof define === "function" && define.amd) {
-    define(["exports", "babel-runtime/regenerator", "babel-runtime/helpers/asyncToGenerator", "every-fn", "./context"], factory);
+    define(["exports", "babel-runtime/regenerator", "babel-runtime/helpers/asyncToGenerator", "every-fn", "./session-handler", "./middleware-context"], factory);
   } else if (typeof exports !== "undefined") {
-    factory(exports, require("babel-runtime/regenerator"), require("babel-runtime/helpers/asyncToGenerator"), require("every-fn"), require("./context"));
+    factory(exports, require("babel-runtime/regenerator"), require("babel-runtime/helpers/asyncToGenerator"), require("every-fn"), require("./session-handler"), require("./middleware-context"));
   } else {
     var mod = {
       exports: {}
     };
-    factory(mod.exports, global.regenerator, global.asyncToGenerator, global.everyFn, global.context);
+    factory(mod.exports, global.regenerator, global.asyncToGenerator, global.everyFn, global.sessionHandler, global.middlewareContext);
     global.middleware = mod.exports;
   }
-})(this, function (exports, _regenerator, _asyncToGenerator2, _everyFn, _context2) {
+})(this, function (exports, _regenerator, _asyncToGenerator2, _everyFn, _sessionHandler, _middlewareContext) {
   "use strict";
 
   Object.defineProperty(exports, "__esModule", {
@@ -24,13 +24,15 @@
 
   var _everyFn2 = _interopRequireDefault(_everyFn);
 
+  var _sessionHandler2 = _interopRequireDefault(_sessionHandler);
+
   function _interopRequireDefault(obj) {
     return obj && obj.__esModule ? obj : {
       default: obj
     };
   }
 
-  var middlewareFactory = exports.middlewareFactory = function middlewareFactory(activityAuth, signingKey, sessionHandler) {
+  var middlewareFactory = exports.middlewareFactory = function middlewareFactory(activityAuth, signingKey, logHandler) {
     return function (activity) {
       var redirect = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : "/access-denied";
       return function () {
@@ -41,29 +43,36 @@
               switch (_context.prev = _context.next) {
                 case 0:
                   _context.next = 2;
-                  return (0, _everyFn2.default)([_context2.getTokenFromCookie, _context2.getTokenFromHeader, _context2.sendTokenRejection, _context2.handleError, _context2.getSessionFromToken, _context2.sendSessionRejection, _context2.handleError, _context2.sendRoleRejection, _context2.handleError, _context2.sendActivityRejection, _context2.handleError], { activity: activity, req: req, signingKey: signingKey, activityAuth: activityAuth });
+                  return (0, _everyFn2.default)([_middlewareContext.getTokenFromCookie, _middlewareContext.getTokenFromHeader, _middlewareContext.sendTokenRejection, _middlewareContext.handleError, _middlewareContext.getSessionFromToken, _middlewareContext.sendSessionRejection, _middlewareContext.handleError, _middlewareContext.sendRoleRejection, _middlewareContext.handleError, _middlewareContext.sendActivityRejection, _middlewareContext.handleError], { activity: activity, req: req, signingKey: signingKey, activityAuth: activityAuth });
 
                 case 2:
                   data = _context.sent;
 
-                  if (data.activity != "public" && data.errorCode) {
-                    res.set("x-error", data.errorCode);
-                    res.redirect(redirect);
-                    res.status(403);
-                  } else {
-                    if (data.session) {
-                      req.session = data.session;
-                    }
-                    if (data.session && data.session.roles) {
-                      req.access = activityAuth.getAccessData(data.session.roles);
-                    }
-                    if (sessionHandler) {
-                      sessionHandler(req, res);
-                    }
-                    next();
+                  if (!(data.activity != "public" && data.errorCode)) {
+                    _context.next = 9;
+                    break;
                   }
 
-                case 4:
+                  res.set("x-error", data.errorCode);
+                  res.redirect(redirect);
+                  res.status(403);
+                  _context.next = 14;
+                  break;
+
+                case 9:
+                  if (data.session) {
+                    req.session = data.session;
+                  }
+                  if (data.session && data.session.roles) {
+                    req.access = activityAuth.getAccessData(data.session.roles);
+                  }
+                  _context.next = 13;
+                  return (0, _sessionHandler2.default)(req, res, signingKey, null, logHandler);
+
+                case 13:
+                  next();
+
+                case 14:
                 case "end":
                   return _context.stop();
               }
