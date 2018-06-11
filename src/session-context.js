@@ -58,11 +58,11 @@ export const sendCookie = ({
   const sentCookie =
     hasSession === false || hasSessionId === false ? true : false;
 
-  const expiration = sessionExpiration || 4684354983000; // about 100 years
+  const expiration = sessionExpiration || new Date(253402300000000);
   const token = encryptSession(session, expiration, signingKey);
 
   if (sentCookie) {
-    res.cookie("token", token, { expires: expiration });
+    res.cookie("token", token, { expires: expiration, httpOnly: true, path: "/" });
   }
   return { sentCookie };
 };
