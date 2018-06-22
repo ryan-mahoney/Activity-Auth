@@ -40,7 +40,7 @@ export const checkForMarketingTracking = ({ req }) => ({
     (accumulator, key) =>
       req.query
         ? req.query[key] && req.query[key].trim() != ""
-          ? accumulator.concat({ [key]: req.query[key].trim() })
+          ? Object.assign({}, accumulator, { [key]: req.query[key].trim() })
           : accumulator
         : accumulator,
     []
@@ -62,7 +62,11 @@ export const sendCookie = ({
   const token = encryptSession(session, expiration, signingKey);
 
   if (sentCookie) {
-    res.cookie("token", token, { expires: expiration, httpOnly: true, path: "/" });
+    res.cookie("token", token, {
+      expires: expiration,
+      httpOnly: true,
+      path: "/"
+    });
   }
   return { sentCookie };
 };

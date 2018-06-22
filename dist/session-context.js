@@ -81,7 +81,7 @@
     var req = _ref7.req;
     return {
       marketing: trackingParams.reduce(function (accumulator, key) {
-        return req.query ? req.query[key] && req.query[key].trim() != "" ? accumulator.concat((0, _defineProperty3.default)({}, key, req.query[key].trim())) : accumulator : accumulator;
+        return req.query ? req.query[key] && req.query[key].trim() != "" ? (0, _assign2.default)({}, accumulator, (0, _defineProperty3.default)({}, key, req.query[key].trim())) : accumulator : accumulator;
       }, [])
     };
   };
@@ -100,7 +100,11 @@
     var token = (0, _session.encryptSession)(session, expiration, signingKey);
 
     if (sentCookie) {
-      res.cookie("token", token, { expires: expiration, httpOnly: true, path: "/" });
+      res.cookie("token", token, {
+        expires: expiration,
+        httpOnly: true,
+        path: "/"
+      });
     }
     return { sentCookie: sentCookie };
   };
