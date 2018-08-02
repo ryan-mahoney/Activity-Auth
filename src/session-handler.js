@@ -1,4 +1,4 @@
-import everyFn from "every-fn";
+import { every } from "every-fn";
 import {
   setReferringUrl,
   setOriginalUrl,
@@ -17,7 +17,7 @@ export default async (
   sessionExpiration,
   eventLogHandler
 ) => {
-  const data = await everyFn(
+  const data = await every(
     [
       setReferringUrl,
       setOriginalUrl,
