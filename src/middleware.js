@@ -1,4 +1,4 @@
-import everyFn from "every-fn";
+import { every } from "every-fn";
 import sessionHandler from "./session-handler";
 import {
   getTokenFromCookie,
@@ -15,7 +15,7 @@ export const middlewareFactory = (activityAuth, signingKey, logHandler) => (
   activity,
   redirect = "/access-denied"
 ) => async (req, res, next) => {
-  const data = await everyFn(
+  const data = await every(
     [
       getTokenFromCookie,
       getTokenFromHeader,
