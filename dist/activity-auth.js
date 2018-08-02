@@ -1,101 +1,40 @@
-(function (global, factory) {
-  if (typeof define === "function" && define.amd) {
-    define(["exports", "babel-runtime/core-js/set", "babel-runtime/helpers/toConsumableArray", "babel-runtime/helpers/defineProperty", "babel-runtime/core-js/object/assign", "babel-runtime/core-js/object/keys"], factory);
-  } else if (typeof exports !== "undefined") {
-    factory(exports, require("babel-runtime/core-js/set"), require("babel-runtime/helpers/toConsumableArray"), require("babel-runtime/helpers/defineProperty"), require("babel-runtime/core-js/object/assign"), require("babel-runtime/core-js/object/keys"));
-  } else {
-    var mod = {
-      exports: {}
-    };
-    factory(mod.exports, global.set, global.toConsumableArray, global.defineProperty, global.assign, global.keys);
-    global.activityAuth = mod.exports;
-  }
-})(this, function (exports, _set, _toConsumableArray2, _defineProperty2, _assign, _keys) {
-  "use strict";
+"use strict";
 
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  exports.authorizerFactory = exports.getAppsByComponents = exports.getComponentsByEntities = exports.getEntitiesByActivities = exports.getActivitiesByRoles = exports.invertActivitiesByRole = undefined;
+const invertActivitiesByRole = exports.invertActivitiesByRole = roleActivities => Object.keys(roleActivities).reduce((output, role) => roleActivities[role].reduce((newOutput, activity) => Object.assign({}, newOutput, {
+  [activity]: (newOutput[activity] || []).concat(role)
+}), output), {});
 
-  var _set2 = _interopRequireDefault(_set);
+const getActivitiesByRoles = exports.getActivitiesByRoles = (roleActivities, roles) => [...new Set(Object.keys(roleActivities).reduce((output, role) => {
+  return roles.indexOf(role) > -1 ? output.concat(roleActivities[role]) : output;
+}, []))];
 
-  var _toConsumableArray3 = _interopRequireDefault(_toConsumableArray2);
+const getEntitiesByActivities = exports.getEntitiesByActivities = (entitiesByActivity, userActivities) => [...new Set(Object.keys(entitiesByActivity).reduce((output, activity) => userActivities.indexOf(activity) > -1 ? output.concat(entitiesByActivity[activity]) : output, []))];
 
-  var _defineProperty3 = _interopRequireDefault(_defineProperty2);
+const getComponentsByEntities = exports.getComponentsByEntities = (components, userEntities) => components.filter(component => userEntities.indexOf(component.entity) > -1);
 
-  var _assign2 = _interopRequireDefault(_assign);
+const getAppsByComponents = exports.getAppsByComponents = (components, apps) => {
+  const appIds = [...new Set(components.map(component => component.app_id))];
+  return apps.filter(app => appIds.indexOf(app.id) > -1);
+};
 
-  var _keys2 = _interopRequireDefault(_keys);
+const authorizerFactory = exports.authorizerFactory = (activitiesByRole, entitiesByActivity = {}, components = [], apps = []) => {
+  const rolesByActivity = invertActivitiesByRole(activitiesByRole);
 
-  function _interopRequireDefault(obj) {
-    return obj && obj.__esModule ? obj : {
-      default: obj
-    };
-  }
+  return {
+    check: (activity, userRoles) => userRoles.indexOf("superadmin") > -1 ? true : !(activity in rolesByActivity) ? false : rolesByActivity[activity].reduce((matched, activityRole) => matched ? matched : userRoles.indexOf(activityRole) > -1, false),
 
-  var invertActivitiesByRole = exports.invertActivitiesByRole = function invertActivitiesByRole(roleActivities) {
-    return (0, _keys2.default)(roleActivities).reduce(function (output, role) {
-      return roleActivities[role].reduce(function (newOutput, activity) {
-        return (0, _assign2.default)({}, newOutput, (0, _defineProperty3.default)({}, activity, (newOutput[activity] || []).concat(role)));
-      }, output);
-    }, {});
+    getAccessData: userRoles => {
+      const userActivities = getActivitiesByRoles(activitiesByRole, userRoles);
+      const userEntities = getEntitiesByActivities(entitiesByActivity, userActivities);
+      const userComponents = getComponentsByEntities(components, userEntities);
+      const userApps = getAppsByComponents(userComponents, apps);
+
+      return {
+        activities: userActivities,
+        entities: userEntities,
+        components: userComponents,
+        apps: userApps
+      };
+    }
   };
-
-  var getActivitiesByRoles = exports.getActivitiesByRoles = function getActivitiesByRoles(roleActivities, roles) {
-    return [].concat((0, _toConsumableArray3.default)(new _set2.default((0, _keys2.default)(roleActivities).reduce(function (output, role) {
-      return roles.indexOf(role) > -1 ? output.concat(roleActivities[role]) : output;
-    }, []))));
-  };
-
-  var getEntitiesByActivities = exports.getEntitiesByActivities = function getEntitiesByActivities(entitiesByActivity, userActivities) {
-    return [].concat((0, _toConsumableArray3.default)(new _set2.default((0, _keys2.default)(entitiesByActivity).reduce(function (output, activity) {
-      return userActivities.indexOf(activity) > -1 ? output.concat(entitiesByActivity[activity]) : output;
-    }, []))));
-  };
-
-  var getComponentsByEntities = exports.getComponentsByEntities = function getComponentsByEntities(components, userEntities) {
-    return components.filter(function (component) {
-      return userEntities.indexOf(component.entity) > -1;
-    });
-  };
-
-  var getAppsByComponents = exports.getAppsByComponents = function getAppsByComponents(components, apps) {
-    var appIds = [].concat((0, _toConsumableArray3.default)(new _set2.default(components.map(function (component) {
-      return component.app_id;
-    }))));
-    return apps.filter(function (app) {
-      return appIds.indexOf(app.id) > -1;
-    });
-  };
-
-  var authorizerFactory = exports.authorizerFactory = function authorizerFactory(activitiesByRole) {
-    var entitiesByActivity = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-    var components = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];
-    var apps = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : [];
-
-    var rolesByActivity = invertActivitiesByRole(activitiesByRole);
-
-    return {
-      check: function check(activity, userRoles) {
-        return userRoles.indexOf("superadmin") > -1 ? true : !(activity in rolesByActivity) ? false : rolesByActivity[activity].reduce(function (matched, activityRole) {
-          return matched ? matched : userRoles.indexOf(activityRole) > -1;
-        }, false);
-      },
-
-      getAccessData: function getAccessData(userRoles) {
-        var userActivities = getActivitiesByRoles(activitiesByRole, userRoles);
-        var userEntities = getEntitiesByActivities(entitiesByActivity, userActivities);
-        var userComponents = getComponentsByEntities(components, userEntities);
-        var userApps = getAppsByComponents(userComponents, apps);
-
-        return {
-          activities: userActivities,
-          entities: userEntities,
-          components: userComponents,
-          apps: userApps
-        };
-      }
-    };
-  };
-});
+};
