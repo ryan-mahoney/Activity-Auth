@@ -1,5 +1,6 @@
 import { every } from "every-fn";
 import {
+  setHostOrigin,
   setReferringUrl,
   setOriginalUrl,
   checkForSession,
@@ -19,6 +20,7 @@ export default async (
 ) => {
   const data = await every(
     [
+      setHostOrigin,
       setReferringUrl,
       setOriginalUrl,
       checkForSession,

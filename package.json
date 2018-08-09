@@ -1,6 +1,6 @@
 {
   "name": "activity-auth",
-  "version": "1.0.12",
+  "version": "1.0.13",
   "description": "Activity based authorization library and middleware",
   "repository": {
     "type": "git",
