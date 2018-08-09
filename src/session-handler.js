@@ -30,7 +30,7 @@ export default async (
     ],
     { req, res, signingKey, sessionExpiration }
   );
-  if (eventLogHandler) {
+  if (eventLogHandler && req.method === "GET") {
     eventLogHandler(data);
   }
 };

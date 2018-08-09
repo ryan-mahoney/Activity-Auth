@@ -17,7 +17,7 @@ var sendCookie = _sessionContext.sendCookie;
 
 module.exports = async (req, res, signingKey, sessionExpiration, eventLogHandler) => {
   const data = await every([setReferringUrl, setOriginalUrl, checkForSession, createSession, checkForSessionId, createSessionId, checkForMarketingTracking, sendCookie], { req, res, signingKey, sessionExpiration });
-  if (eventLogHandler) {
+  if (eventLogHandler && req.method === "GET") {
     eventLogHandler(data);
   }
 };
