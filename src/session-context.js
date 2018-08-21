@@ -52,6 +52,7 @@ export const checkForMarketingTracking = ({ req }) => ({
 });
 
 export const sendCookie = ({
+  req,
   res,
   session,
   hasSession,
@@ -64,6 +65,7 @@ export const sendCookie = ({
 
   const expiration = sessionExpiration || new Date(253402300000000);
   const token = encryptSession(session, expiration, signingKey);
+  req.session = session;
 
   if (sentCookie) {
     res.cookie("token", token, {
