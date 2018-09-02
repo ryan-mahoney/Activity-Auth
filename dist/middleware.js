@@ -16,7 +16,7 @@ var getSessionFromToken = _middlewareContext.getSessionFromToken;
 var sendSessionRejection = _middlewareContext.sendSessionRejection;
 var sendRoleRejection = _middlewareContext.sendRoleRejection;
 var sendActivityRejection = _middlewareContext.sendActivityRejection;
-const middlewareFactory = exports.middlewareFactory = (activityAuth, signingKey, logHandler) => (activity, redirect = "/access-denied") => async (req, res, next) => {
+const middlewareFactory = exports.middlewareFactory = (activityAuth, signingKey, logHandler, trackingFieldAlias = {}) => (activity, redirect = "/access-denied") => async (req, res, next) => {
   const data = await every([getTokenFromCookie, getTokenFromHeader, sendTokenRejection, handleError, getSessionFromToken, sendSessionRejection, handleError, sendRoleRejection, handleError, sendActivityRejection, handleError], { activity, req, signingKey, activityAuth });
   if (data.activity != "public" && data.errorCode) {
     res.set("x-error", data.errorCode);
@@ -29,7 +29,7 @@ const middlewareFactory = exports.middlewareFactory = (activityAuth, signingKey,
     if (data.session && data.session.roles) {
       req.access = activityAuth.getAccessData(data.session.roles);
     }
-    await sessionHandler(req, res, signingKey, null, logHandler);
+    await sessionHandler(req, res, signingKey, null, logHandler, trackingFieldAlias);
     next();
   }
 };
