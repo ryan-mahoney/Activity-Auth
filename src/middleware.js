@@ -11,10 +11,12 @@ import {
   sendActivityRejection
 } from "./middleware-context";
 
-export const middlewareFactory = (activityAuth, signingKey, logHandler) => (
-  activity,
-  redirect = "/access-denied"
-) => async (req, res, next) => {
+export const middlewareFactory = (
+  activityAuth,
+  signingKey,
+  logHandler,
+  trackingFieldAlias = {}
+) => (activity, redirect = "/access-denied") => async (req, res, next) => {
   const data = await every(
     [
       getTokenFromCookie,
@@ -42,7 +44,14 @@ export const middlewareFactory = (activityAuth, signingKey, logHandler) => (
     if (data.session && data.session.roles) {
       req.access = activityAuth.getAccessData(data.session.roles);
     }
-    await sessionHandler(req, res, signingKey, null, logHandler);
+    await sessionHandler(
+      req,
+      res,
+      signingKey,
+      null,
+      logHandler,
+      trackingFieldAlias
+    );
     next();
   }
 };

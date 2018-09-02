@@ -39,17 +39,22 @@ export const createSessionId = ({ hasSessionId, session }) => ({
   session: hasSessionId ? session : Object.assign({}, session, { id: uuidv4() })
 });
 
-export const checkForMarketingTracking = ({ req }) => ({
+export const checkForMarketingTracking = ({ req, trackingFieldAlias }) => ({
   marketing: trackingParams.reduce(
     (accumulator, key) =>
       req.query
-        ? req.query[key] && req.query[key].trim() != ""
-          ? Object.assign({}, accumulator, { [key]: req.query[key].trim() })
+        ? req.query[trackingKey(key, trackingFieldAlias)] &&
+          req.query[trackingKey(key, trackingFieldAlias)].trim() != ""
+          ? Object.assign({}, accumulator, {
+              [key]: req.query[trackingKey(key, trackingFieldAlias)].trim()
+            })
           : accumulator
         : accumulator,
     []
   )
 });
+
+const trackingKey = (key, aliases) => (aliases[key] ? aliases[key] : key);
 
 export const sendCookie = ({
   req,
