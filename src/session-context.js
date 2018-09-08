@@ -10,10 +10,6 @@ const trackingParams = [
   "utm_campaign"
 ];
 
-export const setHostOrigin = ({ req }) => ({
-  hostOrigin: req.get("origin") || req.get("host") || null
-});
-
 export const setReferringUrl = ({ req }) => ({
   referringUrl: req.get("referrer") || req.get("referer") || null
 });

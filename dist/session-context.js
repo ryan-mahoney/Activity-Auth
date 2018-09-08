@@ -9,10 +9,6 @@ var encryptSession = _session.encryptSession;
 
 const trackingParams = ["affiliate", "utm_source", "utm_medium", "utm_term", "utm_content", "utm_campaign"];
 
-const setHostOrigin = exports.setHostOrigin = ({ req }) => ({
-  hostOrigin: req.get("origin") || req.get("host") || null
-});
-
 const setReferringUrl = exports.setReferringUrl = ({ req }) => ({
   referringUrl: req.get("referrer") || req.get("referer") || null
 });
