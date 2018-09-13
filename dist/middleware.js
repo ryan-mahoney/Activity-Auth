@@ -22,13 +22,13 @@ const middlewareFactory = exports.middlewareFactory = (activityAuth, signingKey,
     res.set("x-error", data.errorCode);
     res.redirect(redirect);
     res.status(403);
-  } else {
-    if (data.session) {
-      req.session = data.session;
-    }
-    if (data.session && data.session.roles) {
-      req.access = activityAuth.getAccessData(data.session.roles);
-    }
-    await sessionHandler(req, res, signingKey, null, logHandler, trackingFieldAlias, nextFn);
+    return;
   }
+  if (data.session) {
+    req.session = data.session;
+  }
+  if (data.session && data.session.roles) {
+    req.access = activityAuth.getAccessData(data.session.roles);
+  }
+  await sessionHandler(req, res, signingKey, null, logHandler, trackingFieldAlias, nextFn);
 };
