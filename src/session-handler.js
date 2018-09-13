@@ -17,7 +17,8 @@ export default async (
   signingKey,
   sessionExpiration,
   eventLogHandler,
-  trackingFieldAlias
+  trackingFieldAlias,
+  nextFn
 ) => {
   const data = await every(
     [
@@ -33,7 +34,9 @@ export default async (
     ],
     { req, res, signingKey, sessionExpiration, trackingFieldAlias }
   );
+  nextFn();
   if (eventLogHandler && req.method === "GET") {
-    eventLogHandler(data);
+    await eventLogHandler(data);
   }
+  return data;
 };

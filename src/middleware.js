@@ -16,7 +16,7 @@ export const middlewareFactory = (
   signingKey,
   logHandler,
   trackingFieldAlias = {}
-) => (activity, redirect = "/access-denied") => async (req, res, next) => {
+) => (activity, redirect = "/access-denied") => async (req, res, nextFn) => {
   const data = await every(
     [
       getTokenFromCookie,
@@ -50,8 +50,8 @@ export const middlewareFactory = (
       signingKey,
       null,
       logHandler,
-      trackingFieldAlias
+      trackingFieldAlias,
+      nextFn
     );
-    next();
   }
 };
