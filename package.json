@@ -1,10 +1,6 @@
 {
   "name": "activity-auth",
-<<<<<<< HEAD
-  "version": "1.0.17",
-=======
-  "version": "1.0.16",
->>>>>>> do not set host origin based on request
+  "version": "1.0.18",
   "description": "Activity based authorization library and middleware",
   "repository": {
     "type": "git",

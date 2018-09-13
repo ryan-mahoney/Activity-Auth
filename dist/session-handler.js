@@ -15,14 +15,9 @@ var createSessionId = _sessionContext.createSessionId;
 var checkForMarketingTracking = _sessionContext.checkForMarketingTracking;
 var sendCookie = _sessionContext.sendCookie;
 
-<<<<<<< HEAD
 module.exports = async (req, res, signingKey, sessionExpiration, eventLogHandler, trackingFieldAlias, nextFn) => {
-  const data = await every([setHostOrigin, setReferringUrl, setOriginalUrl, checkForSession, createSession, checkForSessionId, createSessionId, checkForMarketingTracking, sendCookie], { req, res, signingKey, sessionExpiration, trackingFieldAlias });
-  nextFn();
-=======
-module.exports = async (req, res, signingKey, sessionExpiration, eventLogHandler, trackingFieldAlias) => {
   const data = await every([setReferringUrl, setOriginalUrl, checkForSession, createSession, checkForSessionId, createSessionId, checkForMarketingTracking, sendCookie], { req, res, signingKey, sessionExpiration, trackingFieldAlias });
->>>>>>> do not set host origin based on request
+  nextFn();
   if (eventLogHandler && req.method === "GET") {
     await eventLogHandler(data);
   }
