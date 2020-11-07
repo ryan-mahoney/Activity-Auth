@@ -29,7 +29,7 @@
   "peerDependencies": {},
   "dependencies": {
     "every-fn": "^1.0.5",
-    "njwt": "^0.4.0",
+    "njwt": "^1.0.0",
     "uuid": "^3.3.2"
   }
 }
