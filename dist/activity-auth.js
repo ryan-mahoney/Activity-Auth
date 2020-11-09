@@ -19,16 +19,13 @@ const getAppsByComponents = exports.getAppsByComponents = (components, apps) => 
 
 const authorizerFactory = exports.authorizerFactory = (activitiesByRole, entitiesByActivity = {}, components = [], apps = []) => {
   const rolesByActivity = invertActivitiesByRole(activitiesByRole);
-
   return {
     check: (activity, userRoles) => userRoles.indexOf("superadmin") > -1 ? true : !(activity in rolesByActivity) ? false : rolesByActivity[activity].reduce((matched, activityRole) => matched ? matched : userRoles.indexOf(activityRole) > -1, false),
-
     getAccessData: userRoles => {
       const userActivities = getActivitiesByRoles(activitiesByRole, userRoles);
       const userEntities = getEntitiesByActivities(entitiesByActivity, userActivities);
       const userComponents = getComponentsByEntities(components, userEntities);
       const userApps = getAppsByComponents(userComponents, apps);
-
       return {
         activities: userActivities,
         entities: userEntities,

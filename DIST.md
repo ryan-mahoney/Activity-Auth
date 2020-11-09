@@ -1,9 +1,7 @@
 # how to transpile
 
 ```sh
-sudo ./builder/run.sh install
-sudo ./builder/run.sh run lint
-sudo ./builder/run.sh run prepublish
+npm run build
 ```
 
 # how to publish

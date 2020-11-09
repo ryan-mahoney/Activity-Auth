@@ -12,8 +12,6 @@ var _session = require("./session");
 
 var decryptSession = _session.decryptSession;
 var encryptSession = _session.encryptSession;
-
-
 module.exports = {
   authorizerFactory: authorizerFactory,
   middlewareFactory: middlewareFactory,
