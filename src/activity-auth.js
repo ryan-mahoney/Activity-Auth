@@ -14,9 +14,7 @@ export const invertActivitiesByRole = roleActivities =>
 export const getActivitiesByRoles = (roleActivities, roles) => [
   ...new Set(
     Object.keys(roleActivities).reduce((output, role) => {
-      return roles.indexOf(role) > -1
-        ? output.concat(roleActivities[role])
-        : output;
+      return roles.indexOf(role) > -1 ? output.concat(roleActivities[role]) : output;
     }, [])
   )
 ];
@@ -25,9 +23,7 @@ export const getEntitiesByActivities = (entitiesByActivity, userActivities) => [
   ...new Set(
     Object.keys(entitiesByActivity).reduce(
       (output, activity) =>
-        userActivities.indexOf(activity) > -1
-          ? output.concat(entitiesByActivity[activity])
-          : output,
+        userActivities.indexOf(activity) > -1 ? output.concat(entitiesByActivity[activity]) : output,
       []
     )
   )
@@ -37,16 +33,11 @@ export const getComponentsByEntities = (components, userEntities) =>
   components.filter(component => userEntities.indexOf(component.entity) > -1);
 
 export const getAppsByComponents = (components, apps) => {
-  const appIds = [...new Set(components.map(component => component.app_id))];
+  const appIds = [...new Set(components.map(component => component.appId))];
   return apps.filter(app => appIds.indexOf(app.id) > -1);
 };
 
-export const authorizerFactory = (
-  activitiesByRole,
-  entitiesByActivity = {},
-  components = [],
-  apps = []
-) => {
+export const authorizerFactory = (activitiesByRole, entitiesByActivity = {}, components = [], apps = []) => {
   const rolesByActivity = invertActivitiesByRole(activitiesByRole);
 
   return {
@@ -54,19 +45,15 @@ export const authorizerFactory = (
       userRoles.indexOf("superadmin") > -1
         ? true
         : !(activity in rolesByActivity)
-          ? false
-          : rolesByActivity[activity].reduce(
-              (matched, activityRole) =>
-                matched ? matched : userRoles.indexOf(activityRole) > -1,
-              false
-            ),
+        ? false
+        : rolesByActivity[activity].reduce(
+            (matched, activityRole) => (matched ? matched : userRoles.indexOf(activityRole) > -1),
+            false
+          ),
 
     getAccessData: userRoles => {
       const userActivities = getActivitiesByRoles(activitiesByRole, userRoles);
-      const userEntities = getEntitiesByActivities(
-        entitiesByActivity,
-        userActivities
-      );
+      const userEntities = getEntitiesByActivities(entitiesByActivity, userActivities);
       const userComponents = getComponentsByEntities(components, userEntities);
       const userApps = getAppsByComponents(userComponents, apps);
 
