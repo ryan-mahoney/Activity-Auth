@@ -59,8 +59,8 @@ describe("data manipulation", () => {
 
   it("gets apps by components", () => {
     const components = [
-      { id: "a", entity: "frogs", app_id: "xapp" },
-      { id: "b", entity: "books", app_id: "yapp" }
+      { id: "a", entity: "frogs", appId: "xapp" },
+      { id: "b", entity: "books", appId: "yapp" }
     ];
     const apps = [{ id: "xapp" }, { id: "zapp" }];
     const actual = getAppsByComponents(components, apps);
@@ -83,18 +83,13 @@ describe("user authorizations", () => {
   };
 
   const components = [
-    { id: "a", entity: "frogs", app_id: "xapp" },
-    { id: "b", entity: "cars", app_id: "xapp" }
+    { id: "a", entity: "frogs", appId: "xapp" },
+    { id: "b", entity: "cars", appId: "xapp" }
   ];
 
   const apps = [{ id: "xapp" }, { id: "zapp" }];
 
-  const activityAuth = authorizerFactory(
-    activitiesByRole,
-    activityEntities,
-    components,
-    apps
-  );
+  const activityAuth = authorizerFactory(activitiesByRole, activityEntities, components, apps);
 
   it("accepts authorized user", () => {
     const userRoles = ["role3"];
@@ -126,7 +121,7 @@ describe("user authorizations", () => {
     const expected = {
       activities: ["activity1", "activity3"],
       entities: ["books", "trees", "frogs"],
-      components: [{ id: "a", entity: "frogs", app_id: "xapp" }],
+      components: [{ id: "a", entity: "frogs", appId: "xapp" }],
       apps: [{ id: "xapp" }]
     };
     assert.deepEqual(actual, expected);

@@ -33,7 +33,7 @@ const entitiesByActivity = {
 };
 
 // optional
-const components = [{id: "book-mananger", entity: "book", app_id: "library"}];
+const components = [{id: "book-mananger", entity: "book", appId: "library"}];
 
 // optional
 const apps = [{id: "library"}];

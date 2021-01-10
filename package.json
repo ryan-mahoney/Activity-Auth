@@ -1,6 +1,6 @@
 {
   "name": "activity-auth",
-  "version": "1.0.19",
+  "version": "1.0.20",
   "description": "Activity based authorization library and middleware",
   "repository": {
     "type": "git",
@@ -19,9 +19,9 @@
     "test": "node_modules/mocha/bin/mocha --require @babel/register"
   },
   "devDependencies": {
-    "@babel/cli": "^7.12.1",
-    "@babel/core": "^7.12.3",
-    "@babel/register": "^7.12.1",
+    "@babel/cli": "^7.12.10",
+    "@babel/core": "^7.12.10",
+    "@babel/register": "^7.12.10",
     "assert": "^2.0.0",
     "babel-plugin-transform-es2015-modules-simple-commonjs": "^0.3.0",
     "babel-plugin-transform-runtime": "^6.23.0",
@@ -31,6 +31,6 @@
   "dependencies": {
     "every-fn": "^1.0.6",
     "njwt": "^1.0.0",
-    "uuid": "^8.3.1"
+    "uuid": "^8.3.2"
   }
 }

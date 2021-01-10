@@ -13,7 +13,7 @@ const getEntitiesByActivities = exports.getEntitiesByActivities = (entitiesByAct
 const getComponentsByEntities = exports.getComponentsByEntities = (components, userEntities) => components.filter(component => userEntities.indexOf(component.entity) > -1);
 
 const getAppsByComponents = exports.getAppsByComponents = (components, apps) => {
-  const appIds = [...new Set(components.map(component => component.app_id))];
+  const appIds = [...new Set(components.map(component => component.appId))];
   return apps.filter(app => appIds.indexOf(app.id) > -1);
 };
 
