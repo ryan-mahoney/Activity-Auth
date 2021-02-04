@@ -4,8 +4,6 @@ var _everyFn = require("every-fn");
 
 var every = _everyFn.every;
 
-var sessionHandler = require("./session-handler");
-
 var _middlewareContext = require("./middleware-context");
 
 var getTokenFromCookie = _middlewareContext.getTokenFromCookie;
@@ -17,12 +15,16 @@ var sendSessionRejection = _middlewareContext.sendSessionRejection;
 var sendRoleRejection = _middlewareContext.sendRoleRejection;
 var sendActivityRejection = _middlewareContext.sendActivityRejection;
 
-const middlewareFactory = exports.middlewareFactory = (activityAuth, signingKey, logHandler, trackingFieldAlias = {}) => (activity, redirect = "/access-denied") => async (req, res, nextFn) => {
+const middlewareFactory = exports.middlewareFactory = (userModel, clientId, activityAuth, signingKey, sessionExpiration) => (activity, redirect = "/access-denied") => async (req, res, nextFn) => {
   const data = await every([getTokenFromCookie, getTokenFromHeader, sendTokenRejection, handleError, getSessionFromToken, sendSessionRejection, handleError, sendRoleRejection, handleError, sendActivityRejection, handleError], {
+    userModel,
+    clientId,
     activity,
     req,
+    res,
     signingKey,
-    activityAuth
+    activityAuth,
+    sessionExpiration
   });
 
   if (data.activity != "public" && data.errorCode) {
@@ -40,5 +42,5 @@ const middlewareFactory = exports.middlewareFactory = (activityAuth, signingKey,
     req.access = activityAuth.getAccessData(data.session.roles);
   }
 
-  await sessionHandler(req, res, signingKey, null, logHandler, trackingFieldAlias, nextFn);
+  nextFn();
 };

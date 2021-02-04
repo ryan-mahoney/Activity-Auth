@@ -1,5 +1,4 @@
 import { every } from "every-fn";
-import sessionHandler from "./session-handler";
 import {
   getTokenFromCookie,
   getTokenFromHeader,
@@ -11,12 +10,10 @@ import {
   sendActivityRejection
 } from "./middleware-context";
 
-export const middlewareFactory = (
-  activityAuth,
-  signingKey,
-  logHandler,
-  trackingFieldAlias = {}
-) => (activity, redirect = "/access-denied") => async (req, res, nextFn) => {
+export const middlewareFactory = (userModel, clientId, activityAuth, signingKey, sessionExpiration) => (
+  activity,
+  redirect = "/access-denied"
+) => async (req, res, nextFn) => {
   const data = await every(
     [
       getTokenFromCookie,
@@ -31,7 +28,7 @@ export const middlewareFactory = (
       sendActivityRejection,
       handleError
     ],
-    { activity, req, signingKey, activityAuth }
+    { userModel, clientId, activity, req, res, signingKey, activityAuth, sessionExpiration }
   );
   if (data.activity != "public" && data.errorCode) {
     res.set("x-error", data.errorCode);
@@ -45,13 +42,5 @@ export const middlewareFactory = (
   if (data.session && data.session.roles) {
     req.access = activityAuth.getAccessData(data.session.roles);
   }
-  await sessionHandler(
-    req,
-    res,
-    signingKey,
-    null,
-    logHandler,
-    trackingFieldAlias,
-    nextFn
-  );
+  nextFn();
 };

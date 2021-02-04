@@ -37,22 +37,22 @@ describe("authentication and authorization middleware", () => {
   const components = [];
   const apps = [];
 
-  const activityAuth = authorizerFactory(
-    activitiesByRole,
-    entitiesByActivity,
-    components,
-    apps
-  );
+  const activityAuth = authorizerFactory(activitiesByRole, entitiesByActivity, components, apps);
 
-  const signingKey = "XXX";
+  const signingKey =
+    "AlJ8HFdfTUxr5x7l0+DP47kWrZ4HWM+qCmT1IwNscV/bmunLZhYA6G35bkniwGuJonMdQ0tinqZmMdZ3bBYKOd6dmoieacjZS9z0MH8cFyW89YUy6XN8t6mJbkG4jlKHd7BOYl+6CW0uRQx8Jx7z2HbkgZebZjjZMW5xNqiSVFZpxL1B11XfvmkEEfGUS9CA7YFl5wl6RVV1RGofRT0qMQHBtIwr7F51hDLvLi3O7STjce82gMnEz4rX6kl6Q0Y2Io2hU2ySTupEPxIs8Vr/z9sIuv4ihxAo0k125PyNH9SB4kQdC7n6R0FIJRVD/hjfV1/SaYzQjsXI0veRJuLr8Q==";
 
   const expiration = new Date().getTime() + 24 * 60 * 60 * 1000; // 24 hours from now
+
+  const userModel = {};
+
+  const clientId = "website";
 
   it("redirects unauthorized request, no cookies", async () => {
     let req = new request();
     let res = new response();
     const next = () => {};
-    const middleware = middlewareFactory(activityAuth, signingKey);
+    const middleware = middlewareFactory(userModel, clientId, activityAuth, signingKey, expiration);
     await middleware("activity1")(req, res, next);
     assert.equal(res.code, 403);
     assert.equal(res.headers["x-error"], 1);
@@ -62,7 +62,7 @@ describe("authentication and authorization middleware", () => {
     let req = new request();
     let res = new response();
     const next = () => {};
-    const middleware = middlewareFactory(activityAuth, signingKey);
+    const middleware = middlewareFactory(userModel, clientId, activityAuth, signingKey, expiration);
     await middleware("public")(req, res, next);
     assert.equal(res.code, 200);
   });
@@ -71,7 +71,7 @@ describe("authentication and authorization middleware", () => {
     let req = new request({});
     let res = new response();
     const next = () => {};
-    const middleware = middlewareFactory(activityAuth, signingKey);
+    const middleware = middlewareFactory(userModel, clientId, activityAuth, signingKey, expiration);
     await middleware("activity1")(req, res, next);
     assert.equal(res.code, 403);
     assert.equal(res.headers["x-error"], 1);
@@ -81,7 +81,7 @@ describe("authentication and authorization middleware", () => {
     let req = new request({});
     let res = new response();
     const next = () => {};
-    const middleware = middlewareFactory(activityAuth, signingKey);
+    const middleware = middlewareFactory(userModel, clientId, activityAuth, signingKey, expiration);
     await middleware("public")(req, res, next);
     assert.equal(res.code, 200);
   });
@@ -90,7 +90,7 @@ describe("authentication and authorization middleware", () => {
     let req = new request({ token: "XXX" });
     let res = new response();
     const next = () => {};
-    const middleware = middlewareFactory(activityAuth, signingKey);
+    const middleware = middlewareFactory(userModel, clientId, activityAuth, signingKey, expiration);
     await middleware("activity1")(req, res, next);
     assert.equal(res.code, 403);
     assert.equal(res.headers["x-error"], 2);
@@ -100,17 +100,17 @@ describe("authentication and authorization middleware", () => {
     let req = new request({ token: "XXX" });
     let res = new response();
     const next = () => {};
-    const middleware = middlewareFactory(activityAuth, signingKey);
+    const middleware = middlewareFactory(userModel, clientId, activityAuth, signingKey, expiration);
     await middleware("public")(req, res, next);
     assert.equal(res.code, 200);
   });
 
   it("redirects unauthorized request, no roles in session", async () => {
-    const token = encryptSession({}, expiration, signingKey);
-    let req = new request({ token: token });
+    const token = encryptSession({ userId: 1 }, expiration, signingKey);
+    let req = new request({ token });
     let res = new response();
     const next = () => {};
-    const middleware = middlewareFactory(activityAuth, signingKey);
+    const middleware = middlewareFactory(userModel, clientId, activityAuth, signingKey, expiration);
     await middleware("activity1")(req, res, next);
     assert.equal(res.code, 403);
     assert.equal(res.headers["x-error"], 3);
@@ -121,7 +121,7 @@ describe("authentication and authorization middleware", () => {
     let req = new request({ token: token });
     let res = new response();
     const next = () => {};
-    const middleware = middlewareFactory(activityAuth, signingKey);
+    const middleware = middlewareFactory(userModel, clientId, activityAuth, signingKey, expiration);
     await middleware("activity1")(req, res, next);
     assert.equal(res.code, 403);
     assert.equal(res.headers["x-error"], 4);
@@ -132,7 +132,7 @@ describe("authentication and authorization middleware", () => {
     let req = new request({ token: token });
     let res = new response();
     const next = () => {};
-    const middleware = middlewareFactory(activityAuth, signingKey);
+    const middleware = middlewareFactory(userModel, clientId, activityAuth, signingKey, expiration);
     await middleware("public")(req, res, next);
     assert.equal(res.code, 200);
     assert.equal(req.session.roles[0], "role10");
@@ -144,7 +144,7 @@ describe("authentication and authorization middleware", () => {
     let res = new response();
     let nextCalled = false;
     const next = () => (nextCalled = true);
-    const middleware = middlewareFactory(activityAuth, signingKey);
+    const middleware = middlewareFactory(userModel, clientId, activityAuth, signingKey, expiration);
     await middleware("activity1")(req, res, next);
     assert.equal(res.code, 200);
     assert.equal(nextCalled, true);
@@ -156,7 +156,7 @@ describe("authentication and authorization middleware", () => {
     let res = new response();
     let nextCalled = false;
     const next = () => (nextCalled = true);
-    const middleware = middlewareFactory(activityAuth, signingKey);
+    const middleware = middlewareFactory(userModel, clientId, activityAuth, signingKey, expiration);
     await middleware("activity1")(req, res, next);
     assert.equal(res.code, 200);
     assert.equal(nextCalled, true);
@@ -168,7 +168,7 @@ describe("authentication and authorization middleware", () => {
     let res = new response();
     let nextCalled = false;
     const next = () => (nextCalled = true);
-    const middleware = middlewareFactory(activityAuth, signingKey);
+    const middleware = middlewareFactory(userModel, clientId, activityAuth, signingKey, expiration);
     await middleware("public")(req, res, next);
     assert.equal(res.code, 200);
     assert.equal(nextCalled, true);

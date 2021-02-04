@@ -12,9 +12,11 @@ var _session = require("./session");
 
 var decryptSession = _session.decryptSession;
 var encryptSession = _session.encryptSession;
+var sendCookie = _session.sendCookie;
 module.exports = {
-  authorizerFactory: authorizerFactory,
-  middlewareFactory: middlewareFactory,
-  decryptSession: decryptSession,
-  encryptSession: encryptSession
+  authorizerFactory,
+  middlewareFactory,
+  decryptSession,
+  encryptSession,
+  sendCookie
 };

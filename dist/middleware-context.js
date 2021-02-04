@@ -11,14 +11,17 @@ const handleError = exports.handleError = ({
 const getTokenFromCookie = exports.getTokenFromCookie = ({
   req
 }) => ({
-  token: req.cookies && req.cookies.token ? req.cookies.token : false
+  token: req.cookies && req.cookies.token ? req.cookies.token : false,
+  refresh: req.cookies && req.cookies.refresh ? req.cookies.refresh : false
 });
 
 const getTokenFromHeader = exports.getTokenFromHeader = ({
   token,
+  refresh,
   req
 }) => ({
-  token: token ? token : req.header("Authorization") ? req.header("Authorization").replace(/^Bearer /, "") : false
+  token: token ? token : req.header("Authorization") ? req.header("Authorization").replace(/^Bearer /, "") : false,
+  refresh: refresh ? refresh : req.header("Refresh") ? req.header("Refresh").replace(/^Refresh /, "") : false
 });
 
 const sendTokenRejection = exports.sendTokenRejection = ({
@@ -28,12 +31,19 @@ const sendTokenRejection = exports.sendTokenRejection = ({
   errorCode: 1
 };
 
-const getSessionFromToken = exports.getSessionFromToken = ({
+const getSessionFromToken = exports.getSessionFromToken = async ({
+  res,
+  userModel,
+  clientId,
   token,
-  signingKey
-}) => ({
-  session: decryptSession(token, signingKey)
-});
+  refresh,
+  signingKey,
+  sessionExpiration
+}) => {
+  return {
+    session: await decryptSession(res, userModel, clientId, token, refresh, signingKey, sessionExpiration)
+  };
+};
 
 const sendSessionRejection = exports.sendSessionRejection = ({
   session,
